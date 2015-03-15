@@ -1,0 +1,22 @@
+{
+    "name": "jacobemerick/timezone-converter",
+    "description": "",
+    "keywords": [
+        "timezones"
+    ],
+    "license": "MIT",
+    "authors: [
+        {
+            "name": "Jacob Emerick"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jacobemerick\\TimezoneConverter\\": "src/"
+        }
+    }
+}
+
