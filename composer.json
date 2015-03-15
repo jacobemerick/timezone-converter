@@ -5,7 +5,7 @@
         "timezones"
     ],
     "license": "MIT",
-    "authors: [
+    "authors": [
         {
             "name": "Jacob Emerick"
         }
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Jacobemerick\\TimezoneConverter\\": "src/"
+            "Jacobemerick\\DateTimeZone\\": "src/"
         }
     }
 }
