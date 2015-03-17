@@ -20,6 +20,16 @@ class Converter
 
     public function __construct($format = self::ANY_FORMAT)
     {
+        if (!in_array($format, [
+            self::IANA_FORMAT,
+            self::UTC_FORMAT,
+            self::ABBREVIATION_FORMAT,
+            self::RUBY_FORMAT,
+            self::ANY_FORMAT
+        ])) {
+            throw new DomainException('Invalid format parameters passed into constructor');
+        }
+
         $this->format = $format;
     }
 
