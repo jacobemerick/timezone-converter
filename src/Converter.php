@@ -43,6 +43,52 @@ class Converter
 
     protected function convertTimezone($timezone)
     {
+        switch ($this->format) {
+            case self::IANA_FORMAT:
+                return $timezone;
+                break;
+            case self::UTC_FORMAT:
+                return $this->convertFromUTC($timezone);
+                break;
+            case self::ABBREVIATION_FORMAT:
+                return $this->convertFromAbbreviation($timezone);
+                break;
+            case self::RUBY_FORMAT:
+                return $this->convertFromRuby($timezone);
+                break;
+            case self::ANY_FORMAT:
+                try {
+                    return $this->convertFromUTC($timezone);
+                } catch (Exception $e) {}
+
+                try {
+                    return $this->convertFromAbbreviation($timezone);
+                } catch (Exception $e) {}
+
+                try {
+                    return $this->convertFromRuby($timezone);
+                } catch (Exception $e) {}
+
+                throw new UnexpectedValueException('Could not find a valid timezone format');
+                break;
+            default:
+                throw new DomainException('Invalid format used for conversion');
+                break;
+        }
+    }
+
+    protected function convertFromUTC($timezone)
+    {
+        return 'America/Phoenix';
+    }
+
+    protected function convertFromAbbreviation($timezone)
+    {
+        return 'America/Phoenix';
+    }
+
+    protected function convertFromRuby($timezone)
+    {
         return 'America/Phoenix';
     }
 
