@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Jacobemerick\\DateTimeZone\\": "src/"
+            "Jacobemerick\\TimezoneConverter\\": "src/"
         }
     }
 }
