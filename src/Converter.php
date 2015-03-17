@@ -5,6 +5,7 @@ namespace Jacobemerick\TimezoneConverter;
 use DateTimeZone;
 use Exception,
     DomainException,
+    RuntimeException,
     UnexpectedValueException;
 
 class Converter
@@ -13,7 +14,7 @@ class Converter
     const IANA_FORMAT = 1;
     const UTC_FORMAT = 2;
     const ABBREVIATION_FORMAT = 4;
-    const RUBY_FORMAT = 8;
+    const RAILS_FORMAT = 8;
     const ANY_FORMAT = 2047;
 
     protected $format;
@@ -24,7 +25,7 @@ class Converter
             self::IANA_FORMAT,
             self::UTC_FORMAT,
             self::ABBREVIATION_FORMAT,
-            self::RUBY_FORMAT,
+            self::RAILS_FORMAT,
             self::ANY_FORMAT
         ])) {
             throw new DomainException('Invalid format parameters passed into constructor');
@@ -53,8 +54,8 @@ class Converter
             case self::ABBREVIATION_FORMAT:
                 return $this->convertFromAbbreviation($timezone);
                 break;
-            case self::RUBY_FORMAT:
-                return $this->convertFromRuby($timezone);
+            case self::RAILS_FORMAT:
+                return $this->convertFromRails($timezone);
                 break;
             case self::ANY_FORMAT:
                 try {
@@ -66,7 +67,7 @@ class Converter
                 } catch (Exception $e) {}
 
                 try {
-                    return $this->convertFromRuby($timezone);
+                    return $this->convertFromRails($timezone);
                 } catch (Exception $e) {}
 
                 throw new UnexpectedValueException('Could not find a valid timezone format');
@@ -87,9 +88,39 @@ class Converter
         return 'America/Phoenix';
     }
 
-    protected function convertFromRuby($timezone)
+    protected function convertFromRails($timezone)
     {
-        return 'America/Phoenix';
+        $rails_timezones = $this->getRailsTimezones();
+        if (!array_key_exists($timezone, $rails_timezones)) {
+            throw new UnexpectedValueException('Could not find a relevant Rails timezone to map');
+        }
+        return $rails_timezones[$timezone];
+    }
+
+    protected $rails_timezones;
+    protected function getRailsTimezones()
+    {
+        if (!isset($this->rails_timezones)) {
+            $this->rails_timezones = $this->loadTimezones('rails');
+        }
+        return $this->rails_timezones;
+    }
+
+    protected function loadTimezones($type)
+    {
+        $path = __DIR__ . "/../data/timezone-{$type}.json";
+        $handle = @fopen($path, 'r');
+        if ($handle === false) {
+            throw new RuntimeException("Could not open data file for {$type} timezones");
+        }
+        $contents = fread($handle, filesize($path));
+        fclose($handle);
+
+        $json_contents = json_decode($contents, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException("Could not decode json for {$type} timezones");
+        }
+        return $json_contents;
     }
 
 }
