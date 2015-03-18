@@ -13,8 +13,9 @@ class Converter
 
     const IANA_FORMAT = 1;
     const UTC_FORMAT = 2;
-    const ABBREVIATION_FORMAT = 4;
-    const RAILS_FORMAT = 8;
+    const MILITARY_FORMAT = 4;
+    const ABBREVIATION_FORMAT = 8;
+    const RAILS_FORMAT = 16;
     const ANY_FORMAT = 2047;
 
     protected $format;
@@ -24,6 +25,7 @@ class Converter
         if (!in_array($format, [
             self::IANA_FORMAT,
             self::UTC_FORMAT,
+            self::MILITARY_FORMAT,
             self::ABBREVIATION_FORMAT,
             self::RAILS_FORMAT,
             self::ANY_FORMAT
@@ -50,6 +52,9 @@ class Converter
                 break;
             case self::UTC_FORMAT:
                 return $this->convertFromUTC($timezone);
+                break;
+            case self::MILITARY_FORMAT:
+                return $this->convertFromMilitary($timezone);
                 break;
             case self::ABBREVIATION_FORMAT:
                 return $this->convertFromAbbreviation($timezone);
@@ -95,6 +100,18 @@ class Converter
         return $utc_timezones[$timezone];
     }
 
+    protected function convertFromMilitary($timezone)
+    {
+        $timezone = $timezone[0];
+        $timezone = strtolower($timezone);
+
+        $military_timezones = $this->getMilitaryTimezones();
+        if (!array_key_exists($timezone, $military_timezones)) {
+            throw new UnexpectedValueException('could not find a relevant military timezone to map');
+        }
+        return $military_timezones[$timezone];
+    }
+
     protected function convertFromAbbreviation($timezone)
     {
         return 'America/Phoenix';
@@ -116,6 +133,15 @@ class Converter
             $this->utc_timezones = $this->loadTimezones('utc');
         }
         return $this->utc_timezones;
+    }
+
+    protected $military_timezones;
+    protected function getMilitaryTimezones()
+    {
+        if (!isset($this->military_timezones)) {
+            $this->military_timezones = $this->loadTimezones('military');
+        }
+        return $this->military_timezones;
     }
 
     protected $rails_timezones;

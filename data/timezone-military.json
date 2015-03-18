@@ -1,0 +1,28 @@
+{
+    "a": "Etc/GMT+1",
+    "b": "Etc/GMT+2",
+    "c": "Etc/GMT+3",
+    "d": "Etc/GMT+4",
+    "e": "Etc/GMT+5",
+    "f": "Etc/GMT+6",
+    "g": "Etc/GMT+7",
+    "h": "Etc/GMT+8",
+    "i": "Etc/GMT+9",
+    "k": "Etc/GMT+10",
+    "l": "Etc/GMT+11",
+    "m": "Etc/GMT+12",
+    "n": "Etc/GMT-1",
+    "o": "Etc/GMT-2",
+    "p": "Etc/GMT-3",
+    "q": "Etc/GMT-4",
+    "r": "Etc/GMT-5",
+    "s": "Etc/GMT-6",
+    "t": "Etc/GMT-7",
+    "u": "Etc/GMT-8",
+    "v": "Etc/GMT-9",
+    "w": "Etc/GMT-10",
+    "x": "Etc/GMT-11",
+    "y": "Etc/GMT-12",
+    "z": "UTC"
+}
+
