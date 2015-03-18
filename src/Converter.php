@@ -80,7 +80,19 @@ class Converter
 
     protected function convertFromUTC($timezone)
     {
-        return 'America/Phoenix';
+        $timezone = str_replace(':', '', $timezone);
+        if (ctype_digit($timezone[0])) {
+            $timezone = "+{$timezone}";
+        }
+        if (strlen($timezone) < 5) {
+            $timezone = substr_replace($timezone, '0', 1, 0);
+        }
+
+        $utc_timezones = $this->getUTCTimezones();
+        if (!array_key_exists($timezone, $utc_timezones)) {
+            throw new UnexpectedValueException('Could not find a relevant UTC offset to map');
+        }
+        return $utc_timezones[$timezone];
     }
 
     protected function convertFromAbbreviation($timezone)
@@ -95,6 +107,15 @@ class Converter
             throw new UnexpectedValueException('Could not find a relevant Rails timezone to map');
         }
         return $rails_timezones[$timezone];
+    }
+
+    protected $utc_timezones;
+    protected function getUTCTimezones()
+    {
+        if (!isset($this->utc_timezones)) {
+            $this->utc_timezones = $this->loadTimezones('utc');
+        }
+        return $this->utc_timezones;
     }
 
     protected $rails_timezones;
