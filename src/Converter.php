@@ -68,6 +68,10 @@ class Converter
                 } catch (Exception $e) {}
 
                 try {
+                    return $this->convertFromMilitary($timezone);
+                } catch (Exception $e) {}
+
+                try {
                     return $this->convertFromAbbreviation($timezone);
                 } catch (Exception $e) {}
 
