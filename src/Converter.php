@@ -5,8 +5,8 @@ namespace Jacobemerick\TimezoneConverter;
 use DateTimeZone;
 use Exception,
     DomainException,
-    RuntimeException,
-    UnexpectedValueException;
+    InvalidArgumentException,
+    RuntimeException;
 
 class Converter
 {
@@ -68,10 +68,6 @@ class Converter
                 } catch (Exception $e) {}
 
                 try {
-                    return $this->convertFromMilitary($timezone);
-                } catch (Exception $e) {}
-
-                try {
                     return $this->convertFromAbbreviation($timezone);
                 } catch (Exception $e) {}
 
@@ -79,7 +75,11 @@ class Converter
                     return $this->convertFromRails($timezone);
                 } catch (Exception $e) {}
 
-                throw new UnexpectedValueException('Could not find a valid timezone format');
+                try {
+                    return $this->convertFromMilitary($timezone);
+                } catch (Exception $e) {}
+
+                throw new InvalidArgumentException('Could not find a valid timezone format');
                 break;
             default:
                 throw new DomainException('Invalid format used for conversion');
@@ -99,7 +99,7 @@ class Converter
 
         $utc_timezones = $this->getUTCTimezones();
         if (!array_key_exists($timezone, $utc_timezones)) {
-            throw new UnexpectedValueException('Could not find a relevant UTC offset to map');
+            throw new InvalidArgumentException('Could not find a relevant UTC offset to map');
         }
         return $utc_timezones[$timezone];
     }
@@ -111,21 +111,27 @@ class Converter
 
         $military_timezones = $this->getMilitaryTimezones();
         if (!array_key_exists($timezone, $military_timezones)) {
-            throw new UnexpectedValueException('could not find a relevant military timezone to map');
+            throw new InvalidArgumentException('Could not find a relevant military timezone to map');
         }
         return $military_timezones[$timezone];
     }
 
     protected function convertFromAbbreviation($timezone)
     {
-        return 'America/Phoenix';
+        $timezone = strtolower($timezone);
+
+        $abbreviation_timezones = $this->getAbbreviationTimezones();
+        if (!array_key_exists($timezone, $abbreviation_timezones)) {
+            throw new InvalidArgumentException('Could not find a relevant timezone abbreviation');
+        }
+        return $abbreviation_timezones[$timezone];
     }
 
     protected function convertFromRails($timezone)
     {
         $rails_timezones = $this->getRailsTimezones();
         if (!array_key_exists($timezone, $rails_timezones)) {
-            throw new UnexpectedValueException('Could not find a relevant Rails timezone to map');
+            throw new InvalidArgumentException('Could not find a relevant Rails timezone to map');
         }
         return $rails_timezones[$timezone];
     }
@@ -146,6 +152,15 @@ class Converter
             $this->military_timezones = $this->loadTimezones('military');
         }
         return $this->military_timezones;
+    }
+
+    protected $abbreviation_timezones;
+    protected function getAbbreviationTimezones()
+    {
+        if (!isset($this->abbreviation_timezones)) {
+            $this->abbreviation_timezones = $this->loadTimezones('abbreviations');
+        }
+        return $this->abbreviation_timezones;
     }
 
     protected $rails_timezones;
